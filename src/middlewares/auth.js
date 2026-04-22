@@ -20,10 +20,19 @@ exports.protect = async (req, res, next) => {
   }
 
   try {
+    if (!process.env.JWT_SECRET) {
+      console.error("JWT_SECRET is missing from environment variables");
+      return res.status(500).json({
+        success: false,
+        message: "Internal server configuration error",
+      });
+    }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = await User.findById(decoded.id);
     next();
   } catch (err) {
+    console.error("Auth middleware error:", err.message);
     return res.status(401).json({
       success: false,
       message: "Not authorized to access this route",
