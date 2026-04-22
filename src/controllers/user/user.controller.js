@@ -49,8 +49,13 @@ const registerUser = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Error registering user", error });
-  };
+    console.error("Registration error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Error registering user", 
+      error: error.message 
+    });
+  }
 };
 
 
@@ -94,7 +99,12 @@ const loginUser = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Error logging in user", error });
+    console.error("Login error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Error logging in user", 
+      error: error.message 
+    });
   }
 };
 
@@ -102,8 +112,14 @@ const loginUser = async (req, res) => {
 // @desc    Get user data
 const getMe = async (req, res, next) => {
   try {
-  const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id);
 
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
 
     res.status(200).json({
       success: true,
@@ -115,9 +131,14 @@ const getMe = async (req, res, next) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Error fetching user data", error });   
+    console.error("GetMe error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Error fetching user data", 
+      error: error.message 
+    });
   }
-  };
+};
   
 
 
