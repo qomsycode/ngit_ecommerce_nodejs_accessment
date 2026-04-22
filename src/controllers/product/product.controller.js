@@ -4,10 +4,34 @@ const Product = require("../../models/product/product.model");
 
 const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
-    res.status(200).json(products);
+    const { category, search } = req.query;
+    let query = {};
+
+    // Filter by category
+    if (category) {
+      query.category = category;
+    }
+
+    // Search by name or description
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } }
+      ];
+    }
+
+    const products = await Product.find(query);
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      products
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ 
+      success: false, 
+      message: "Error fetching products",
+      error: error.message 
+    });
   }
 };
 
