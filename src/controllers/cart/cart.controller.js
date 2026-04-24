@@ -28,3 +28,50 @@ const addToCart = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+const updateCartItem = async (req, res) => {    
+    const { productId, quantity } = req.body;
+    try {
+        const userCart = await cart.findOne({ userId: req.user._id });
+        if (!userCart) {
+            return res.status(404).json({ message: "Cart not found" });
+        }
+        const itemIndex = userCart.items.findIndex(item => item.productId.toString() === productId);
+        if (itemIndex > -1) {
+            userCart.items[itemIndex].quantity = quantity;
+            await userCart.save();
+            res.json(userCart);
+        } else {
+            res.status(404).json({ message: "Product not found in cart" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const removeFromCart = async (req, res) => {
+    const { productId } = req.body;
+    try {
+        const userCart = await cart.findOne({ userId: req.user._id });      
+        if (!userCart) {
+            return res.status(404).json({ message: "Cart not found" });
+        }   
+        const itemIndex = userCart.items.findIndex(item => item.productId.toString() === productId);
+        if (itemIndex > -1) {
+            userCart.items.splice(itemIndex, 1);
+            await userCart.save();
+            res.json(userCart);
+        } else {
+            res.status(404).json({ message: "Product not found in cart" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = {
+    getCart,
+    addToCart,
+    updateCartItem,
+    removeFromCart
+};  
