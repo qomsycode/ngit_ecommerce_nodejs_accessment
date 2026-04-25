@@ -68,24 +68,18 @@ const updateCartItem = async (req, res) => {
 };
 
 const removeFromCart = async (req, res) => {
-    const { productId } = req.body;
     try {
         const userCart = await cart.findOne({ user: req.user._id });
-        if (!userCart) {
-            return res.status(404).json({ message: "Cart not found" });
-        }
-        const itemIndex = userCart.items.findIndex(item => item.product.toString() === product);
-        if (itemIndex > -1) {
-            userCart.items.splice(itemIndex, 1);
+        if (userCart) {
+            userCart.items = []; // Clear everything!
             await userCart.save();
-            res.json(userCart);
-        } else {
-            res.status(404).json({ message: "Product not found in cart" });
         }
+        res.json({ message: "Cart cleared successfully", userCart });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 module.exports = {
     getCart,
