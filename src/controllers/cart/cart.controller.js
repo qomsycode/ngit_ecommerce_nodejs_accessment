@@ -1,8 +1,9 @@
 const cart = require('../../models/cart/cart.model');
+const product = require('../../models/product/product.model')
 
 const getCart = async (req, res) => {
   try {
-    const userCart = await cart.findOne({ userId: req.user._id }).populate('items.productId');
+    const userCart = await cart.findOne({ userId: req.user._id }).populate('items.product');
     res.json(userCart);
   } catch (error) {
     res.status(500).json({ message: error.message});
@@ -36,7 +37,7 @@ const updateCartItem = async (req, res) => {
         if (!userCart) {
             return res.status(404).json({ message: "Cart not found" });
         }
-        const itemIndex = userCart.items.findIndex(item => item.productId.toString() === productId);
+        const itemIndex = userCart.items.findIndex(item => item.productId.toString() === product);
         if (itemIndex > -1) {
             userCart.items[itemIndex].quantity = quantity;
             await userCart.save();
@@ -56,7 +57,7 @@ const removeFromCart = async (req, res) => {
         if (!userCart) {
             return res.status(404).json({ message: "Cart not found" });
         }   
-        const itemIndex = userCart.items.findIndex(item => item.productId.toString() === productId);
+        const itemIndex = userCart.items.findIndex(item => item.productId.toString() === product);
         if (itemIndex > -1) {
             userCart.items.splice(itemIndex, 1);
             await userCart.save();
