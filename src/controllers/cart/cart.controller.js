@@ -71,7 +71,7 @@ const removeFromCart = async (req, res) => {
     try {
         const userCart = await cart.findOne({ user: req.user._id });
         if (userCart) {
-            userCart.items = []; // Clear everything!
+            userCart.items = [];
             await userCart.save();
         }
         res.json({ message: "Cart cleared successfully", userCart });
