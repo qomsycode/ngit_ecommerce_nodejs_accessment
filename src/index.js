@@ -9,6 +9,7 @@ const connectDB = require("./db");
 const errorHandler = require("./middlewares/error");
 const userRoutes = require("./routes/users/user.route");
 const productRoutes = require("./routes/product/product.route");
+const cartRoutes = require("./routes/cart/cart.route")
 const PORT = process.env.PORT || 5000;
 const app = express();
 
@@ -19,8 +20,10 @@ app.use(express.urlencoded({ extended: true }));
 // routes
 app.use("/api/auth", userRoutes);
 app.use("/api", productRoutes);
+app.use("/api", cartRoutes)
 app.get("/", (req, res) => {
     res.send("E-commerce API is running...");
+
 });
 
 // Health check endpoint to verify DB connection
