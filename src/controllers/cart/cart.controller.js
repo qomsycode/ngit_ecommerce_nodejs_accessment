@@ -41,15 +41,22 @@ const addToCart = async (req, res) => {
 
 
 const updateCartItem = async (req, res) => {
-    const { productId, quantity } = req.body;
+    const { productId } = req.params; // Get from URL params
+    const { quantity } = req.body;
     try {
         const userCart = await cart.findOne({ user: req.user._id });
-        if (!userCart) {
-            return res.status(404).json({ message: "Cart not found" });
-        }
-        const itemIndex = userCart.items.findIndex(item => item.productId.toString() === product);
+        if (!userCart) return res.status(404).json({ message: "Cart not found" });
+
+        const itemIndex = userCart.items.findIndex(item => item.product.toString() === productId);
+
         if (itemIndex > -1) {
-            userCart.items[itemIndex].quantity = quantity;
+            if (quantity <= 0) {
+                // If quantity is 0 or less, remove the item
+                userCart.items.splice(itemIndex, 1);
+            } else {
+                // Otherwise update it
+                userCart.items[itemIndex].quantity = quantity;
+            }
             await userCart.save();
             res.json(userCart);
         } else {
