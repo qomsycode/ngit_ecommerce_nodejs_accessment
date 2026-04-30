@@ -19,8 +19,7 @@ const getAllProducts = async (req, res) => {
         { description: { $regex: search, $options: "i" } }
       ];
     }
-
-    const products = await Product.find(query);
+   const products = await Product.find(query);
     res.status(200).json({
       success: true,
       count: products.length,
